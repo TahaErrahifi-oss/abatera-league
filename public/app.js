@@ -1837,8 +1837,100 @@ async function delMatch(id) {
 }
 
 
+
+async function checkAdmin() {
+
+    const response =
+        await fetch("/api/admin-status");
+
+    const data =
+        await response.json();
+
+    const login =
+        document.querySelector("#adminLogin");
+
+    const content =
+        document.querySelector("#adminContent");
+
+
+    if (data.loggedIn) {
+
+        login.style.display = "none";
+        content.style.display = "block";
+
+    } else {
+
+        login.style.display = "block";
+        content.style.display = "none";
+
+    }
+
+}
+
+
+async function adminLogin() {
+
+    const username =
+        document.querySelector("#adminUsername").value;
+
+    const password =
+        document.querySelector("#adminPassword").value;
+
+
+    const response =
+        await fetch("/api/login", {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+                username,
+                password
+            })
+
+        });
+
+
+    const data =
+        await response.json();
+
+
+    if (!response.ok) {
+
+        document.querySelector("#loginMessage")
+            .textContent =
+            data.error || "Login failed.";
+
+        return;
+
+    }
+
+
+    document.querySelector("#loginMessage")
+        .textContent = "";
+
+
+    await checkAdmin();
+
+}
+
+
+async function adminLogout() {
+
+    await fetch("/api/logout", {
+        method: "POST"
+    });
+
+    await checkAdmin();
+
+}
+
 // ======================================================
 // START MARBALL
 // ======================================================
 
 load();
+checkAdmin();

@@ -1,1 +1,1 @@
-{"name":"marball-7v7-league","version":"1.0.0","private":true,"type":"module","scripts":{"start":"node server.js"},"dependencies":{"express":"^5.1.0","express-session":"^1.19.0"}}
+{"name":"marball-7v7-league","version":"1.0.0","private":true,"type":"module","scripts":{"start":"node server.js"},"dependencies":{"express":"^5.1.0","express-session":"^1.19.0","pg":"^8.23.0"}}
