@@ -489,420 +489,165 @@
              ADMIN
         ====================== -->
 
-        <section
-            id="admin"
-            class="page"
-           
-        >
-         <div id="adminLogin" class="panel">
+        <section id="admin" class="page">
 
-    <h2>🔐 Admin Login</h2>
+            <!-- LOGIN: only appears when the Admin page is opened -->
+            <div id="adminLogin" class="panel">
+                <h2>🔐 Admin Login</h2>
 
-    <p class="details">
-        Only ABATERA League administrators can access this area.
-    </p>
+                <p class="details">
+                    Only ABATERA League administrators can access this area.
+                </p>
 
-    <label>
-        Username
-        <input
-            type="text"
-            id="adminUsername"
-            placeholder="Username"
-        >
-    </label>
+                <label>
+                    Username
+                    <input type="text" id="adminUsername" placeholder="Username">
+                </label>
 
-    <label>
-        Password
-        <input
-            type="password"
-            id="adminPassword"
-            placeholder="Password"
-        >
-    </label>
+                <label>
+                    Password
+                    <input type="password" id="adminPassword" placeholder="Password">
+                </label>
 
-    <button
-        class="primary"
-        onclick="adminLogin()"
-    >
-        LOGIN
-    </button>
-
-    <p id="loginMessage"></p>
-
-
-    <button
-    class="delete"
-    onclick="adminLogout()"
->
-    Logout
-</button>
-
-</div>
-
-
-<div id="adminContent" style="display:none;">
-
-    <!-- PUT YOUR CURRENT ADMIN CONTENT HERE -->
-
-</div>
-
-
-            <div class="sectionHead">
-
-
-                <div>
-
-                    <p class="eyebrow">
-                        CONTROL ROOM
-                    </p>
-
-                    <h1>
-                        Admin Panel
-                    </h1>
-
-                    <p>
-
-                        Add matches, teams and players.
-
-                        League statistics update
-                        automatically.
-
-                    </p>
-
-                </div>
-
-
+                <button class="primary" onclick="adminLogin()">LOGIN</button>
+                <p id="loginMessage"></p>
             </div>
 
+            <!-- ADMIN DASHBOARD -->
+            <div id="adminContent" style="display:none;">
 
+                <div class="sectionHead">
+                    <div>
+                        <p class="eyebrow">CONTROL ROOM</p>
+                        <h1>Admin Panel</h1>
+                        <p>
+                            Add matches, teams and players. League statistics update automatically.
+                        </p>
+                    </div>
 
-            <div class="grid2">
+                    <button class="delete" onclick="adminLogout()">Logout</button>
+                </div>
 
+                <div class="grid2">
 
-                <!-- ADD MATCH -->
+                    <!-- ADD MATCH -->
+                    <div class="panel">
+                        <h2>➕ Add Match</h2>
 
-                <div class="panel">
-
-
-                    <h2>
-                        ➕ Add Match
-                    </h2>
-
-
-
-                    <form id="matchForm">
-
-
-                        <label>
-
-                            Date
-
-                            <input
-                                type="date"
-                                id="date"
-                            >
-
-                        </label>
-
-
-
-                        <div class="formrow">
-
-
+                        <form id="matchForm">
                             <label>
-
-                                Home Team
-
-                                <select id="homeTeam">
-                                </select>
-
+                                Date
+                                <input type="date" id="date">
                             </label>
 
+                            <div class="formrow">
+                                <label>
+                                    Home Team
+                                    <select id="homeTeam"></select>
+                                </label>
 
+                                <label>
+                                    Away Team
+                                    <select id="away"></select>
+                                </label>
+                            </div>
+
+                            <div class="score">
+                                <input type="number" id="hg" min="0" value="0">
+                                <span>—</span>
+                                <input type="number" id="ag" min="0" value="0">
+                            </div>
 
                             <label>
-
-                                Away Team
-
-                                <select id="away">
-                                </select>
-
+                                Scorers
+                                <small>Separate players with commas. Repeat a player for multiple goals.</small>
+                                <textarea id="scorers" placeholder="Player One, Player One, Player Two"></textarea>
                             </label>
 
+                            <label>
+                                Assists
+                                <small>Separate players with commas.</small>
+                                <textarea id="assistsInput" placeholder="Player Three, Player Four"></textarea>
+                            </label>
 
-                        </div>
+                            <label>
+                                Clean Sheet Goalkeeper
+                                <select id="cs">
+                                    <option value="">None</option>
+                                </select>
+                            </label>
 
+                            <label>
+                                MVP
+                                <select id="mvp">
+                                    <option value="">None</option>
+                                </select>
+                            </label>
 
+                            <label>
+                                Cards
+                                <small>One player per line. Example: Player One - yellow</small>
+                                <textarea id="cardsInput" placeholder="Player One - yellow
+Player Two - red"></textarea>
+                            </label>
 
-                        <!-- SCORE -->
+                            <button class="primary" type="submit">ADD MATCH</button>
+                            <div id="formMsg"></div>
+                        </form>
+                    </div>
 
-                        <div class="score">
+                    <!-- ADD TEAM / PLAYER / EXISTING MATCHES -->
+                    <div class="panel">
+                        <h2>Manage League</h2>
 
+                        <div class="manage">
+                            <h3>Add Team</h3>
+                            <input id="newTeam" placeholder="Team name">
+                            <button onclick="addTeam()">Add Team</button>
 
-                            <input
-                                type="number"
-                                id="hg"
-                                min="0"
-                                value="0"
-                            >
+                            <h3>Add Player</h3>
+                            <input id="newPlayer" placeholder="Player name">
+                            <select id="playerTeam"></select>
 
-
-                            <span>
-                                —
-                            </span>
-
-
-                            <input
-                                type="number"
-                                id="ag"
-                                min="0"
-                                value="0"
-                            >
-
-
-                        </div>
-
-
-
-                        <!-- SCORERS -->
-
-                        <label>
-
-                            Scorers
-
-                            <small>
-
-                                Separate players
-                                with commas.
-
-                                Repeat a player
-                                for multiple goals.
-
-                            </small>
-
-
-                            <textarea
-                                id="scorers"
-                                placeholder="Player One, Player One, Player Two"
-                            ></textarea>
-
-                        </label>
-
-
-
-                        <!-- ASSISTS -->
-
-                        <label>
-
-                            Assists
-
-                            <small>
-
-                                Separate players
-                                with commas.
-
-                            </small>
-
-
-                            <textarea
-                                id="assistsInput"
-                                placeholder="Player Three, Player Four"
-                            ></textarea>
-
-                        </label>
-
-
-
-                        <!-- CLEAN SHEET -->
-
-                        <label>
-
-                            Clean Sheet Goalkeeper
-
-                            <select id="cs">
-
-                                <option value="">
-                                    None
-                                </option>
-
+                            <select id="position">
+                                <option value="GK">Goalkeeper</option>
+                                <option value="DF">Defender</option>
+                                <option value="MF">Midfielder</option>
+                                <option value="FW">Forward</option>
                             </select>
 
-                        </label>
-
-
-
-                        <!-- MVP -->
-
-                        <label>
-
-                            MVP
-
-                            <select id="mvp">
-
-                                <option value="">
-                                    None
-                                </option>
-
-                            </select>
-
-                        </label>
-
-
-
-                        <!-- CARDS -->
-
-                        <label>
-
-                            Cards
-
-                            <small>
-
-                                One player per line.
-
-                                Example:
-                                Player One - yellow
-
-                            </small>
-
-
-                            <textarea
-                                id="cardsInput"
-                                placeholder="Player One - yellow
-Player Two - red"
-                            ></textarea>
-
-                        </label>
-
-
-
-                        <button
-                            class="primary"
-                            type="submit"
-                        >
-
-                            ADD MATCH
-
-                        </button>
-
-
-                        <div id="formMsg">
+                            <button onclick="addPlayer()">Add Player</button>
                         </div>
 
-
-                    </form>
-
+                        <h3 style="margin-top:30px;">Existing Matches</h3>
+                        <div id="adminMatches"></div>
+                    </div>
 
                 </div>
 
-
-
-                <!-- MANAGE -->
-
-                <div class="panel">
-
-
-                
-                    <h2>
-                        Manage League
-                    </h2>
-
-
-
-                    <div class="manage">
-
-
-                        <!-- TEAM -->
-
-                        <h3>
-                            Add Team
-                        </h3>
-
-
-                        <input
-                            id="newTeam"
-                            placeholder="Team name"
-                        >
-
-
-                        <button
-                            onclick="addTeam()"
-                        >
-
-                            Add Team
-
-                        </button>
-
-
-
-                        <!-- PLAYER -->
-
-                        <h3>
-                            Add Player
-                        </h3>
-
-
-                        <input
-                            id="newPlayer"
-                            placeholder="Player name"
-                        >
-
-
-                        <select id="playerTeam">
-                        </select>
-
-
-                        <select id="position">
-
-                            <option value="GK">
-                                Goalkeeper
-                            </option>
-
-                            <option value="DF">
-                                Defender
-                            </option>
-
-                            <option value="MF">
-                                Midfielder
-                            </option>
-
-                            <option value="FW">
-                                Forward
-                            </option>
-
-                        </select>
-
-
-                        <button
-                            onclick="addPlayer()"
-                        >
-
-                            Add Player
-
-                        </button>
-
-
+                <!-- EDIT / DELETE MANAGEMENT -->
+                <div class="sectionHead" style="margin-top:32px;">
+                    <div>
+                        <p class="eyebrow">MANAGEMENT</p>
+                        <h2>Teams & Players</h2>
                     </div>
-
-
-
-                    <h3
-                        style="margin-top:30px;"
-                    >
-
-                        Existing Matches
-
-                    </h3>
-
-
-                    <div id="adminMatches">
-                    </div>
-
-
                 </div>
 
+                <div class="grid2">
+                    <div class="panel">
+                        <h2>🛡️ Manage Teams</h2>
+                        <p class="details">Edit team information or delete a team.</p>
+                        <div id="adminTeamsList"></div>
+                    </div>
+
+                    <div class="panel">
+                        <h2>👤 Manage Players</h2>
+                        <p class="details">Edit players, change their team or delete them.</p>
+                        <div id="adminPlayersList"></div>
+                    </div>
+                </div>
 
             </div>
-
 
         </section>
 
