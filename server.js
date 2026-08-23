@@ -1,0 +1,17 @@
+import express from "express";
+import fs from "fs";
+import path from "path";
+import {fileURLToPath} from "url";
+import session from "express-session";
+const __dirname=path.dirname(fileURLToPath(import.meta.url)),app=express(),PORT=process.env.PORT||3000,DATA=path.join(__dirname,"data.json");
+const seed={league:{name:"MARBALL 7v7",season:"Season 2026",pointsWin:3,pointsDraw:1},teams:[{id:"t1",name:"MARBALL FC",short:"MFC"},{id:"t2",name:"RABAT FC",short:"RFC"},{id:"t3",name:"CASA FC",short:"CFC"},{id:"t4",name:"TANGER FC",short:"TFC"}],players:[{id:"p1",name:"Player One",teamId:"t1",position:"GK"},{id:"p2",name:"Player Two",teamId:"t1",position:"FW"},{id:"p3",name:"Player Three",teamId:"t1",position:"MF"},{id:"p4",name:"Player Four",teamId:"t2",position:"GK"},{id:"p5",name:"Player Five",teamId:"t2",position:"FW"},{id:"p6",name:"Player Six",teamId:"t2",position:"MF"},{id:"p7",name:"Player Seven",teamId:"t3",position:"GK"},{id:"p8",name:"Player Eight",teamId:"t3",position:"FW"},{id:"p9",name:"Player Nine",teamId:"t4",position:"GK"},{id:"p10",name:"Player Ten",teamId:"t4",position:"FW"}],matches:[]};
+if(!fs.existsSync(DATA))fs.writeFileSync(DATA,JSON.stringify(seed,null,2));
+const read=()=>JSON.parse(fs.readFileSync(DATA,"utf8")),write=d=>fs.writeFileSync(DATA,JSON.stringify(d,null,2));
+app.use(express.json());app.use(express.static(path.join(__dirname,"public")));
+app.get("/api/data",(_,res)=>res.json(read()));
+app.post("/api/matches",(req,res)=>{const d=read(),m=req.body;if(!m.homeTeamId||!m.awayTeamId||m.homeTeamId===m.awayTeamId)return res.status(400).json({error:"Choose two different teams."});m.homeGoals=Number(m.homeGoals);m.awayGoals=Number(m.awayGoals);if(!Number.isInteger(m.homeGoals)||!Number.isInteger(m.awayGoals)||m.homeGoals<0||m.awayGoals<0)return res.status(400).json({error:"Invalid score."});m.id="m"+Date.now();m.date=m.date||new Date().toISOString().slice(0,10);m.scorers=Array.isArray(m.scorers)?m.scorers:[];m.assists=Array.isArray(m.assists)?m.assists:[];m.cleanSheetPlayerId=m.cleanSheetPlayerId||null;m.mvpPlayerId=m.mvpPlayerId||null;m.cards=Array.isArray(m.cards)?m.cards:[];d.matches.unshift(m);write(d);res.json(m)});
+app.delete("/api/matches/:id",(req,res)=>{const d=read();d.matches=d.matches.filter(m=>m.id!==req.params.id);write(d);res.json({ok:true})});
+app.post("/api/teams",(req,res)=>{const d=read(),name=String(req.body.name||"").trim();if(!name)return res.status(400).json({error:"Team name required."});const t={id:"t"+Date.now(),name,short:(name.replace(/[^A-Za-z]/g,"").slice(0,3)||"TM").toUpperCase()};d.teams.push(t);write(d);res.json(t)});
+app.post("/api/players",(req,res)=>{const d=read(),name=String(req.body.name||"").trim(),teamId=req.body.teamId;if(!name||!d.teams.some(t=>t.id===teamId))return res.status(400).json({error:"Name and valid team required."});const p={id:"p"+Date.now(),name,teamId,position:req.body.position||"FW"};d.players.push(p);write(d);res.json(p)});
+app.get("*splat",(req,res)=>res.sendFile(path.join(__dirname,"public","index.html")));
+app.listen(PORT,()=>console.log(`MARBALL 7v7 running on http://localhost:${PORT}`));

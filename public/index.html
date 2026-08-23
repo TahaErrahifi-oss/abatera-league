@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1"
+    >
+
+    <title>ABATERA LEAGUE | 7v7 Haxball</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+</head>
+
+
+<body>
+
+    <!-- =========================
+         HEADER
+    ========================== -->
+
+    <header>
+
+        <div class="brand">
+
+            <span>⚽</span>
+
+            <div>
+
+                <b>ABATERA</b>
+
+                <small>
+                    7v7 LEAGUE
+                </small>
+
+            </div>
+
+        </div>
+
+
+        <nav>
+
+            <button
+                data-page="home"
+                class="active"
+            >
+                Home
+            </button>
+
+
+            <button data-page="league">
+                League
+            </button>
+
+
+            <button data-page="matches">
+                Matches
+            </button>
+
+
+            <button data-page="stats">
+                Stats
+            </button>
+
+
+            <button data-page="teams">
+                Teams
+            </button>
+
+
+            <button data-page="admin">
+                Admin
+            </button>
+
+        </nav>
+
+    </header>
+
+
+
+    <!-- =========================
+         MAIN
+    ========================== -->
+
+    <main>
+
+
+        <!-- =====================
+             HOME
+        ====================== -->
+
+        <section
+            id="home"
+            class="page active"
+        >
+
+
+            <div class="hero">
+
+
+                <div>
+
+                    <p class="eyebrow">
+                        ABATERA LEAGUE
+                    </p>
+
+
+                    <h1>
+                        7v7 LEAGUE
+                    </h1>
+
+
+                    <p>
+
+                        The official ABATERA Haxball
+                        7v7 championship.
+
+                        Follow the standings,
+                        results, players and
+                        statistics throughout
+                        the season.
+
+                    </p>
+
+
+                    <button
+                        class="primary"
+                        onclick="showPage('league')"
+                    >
+
+                        View League Table →
+
+                    </button>
+
+                </div>
+
+
+                <div class="ball">
+
+                    ⚽
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- HOME INFO CARDS -->
+
+            <div
+                class="cards"
+                id="homeCards"
+            >
+            </div>
+
+
+
+            <!-- HOME CONTENT -->
+
+            <div class="grid2">
+
+
+                <div class="panel">
+
+                    <h2>
+                        Latest Results
+                    </h2>
+
+                    <div id="homeMatches">
+                    </div>
+
+                </div>
+
+
+
+                <div class="panel">
+
+                    <h2>
+                        👑 Top Scorers
+                    </h2>
+
+                    <div id="homeScorers">
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- =====================
+             LEAGUE
+        ====================== -->
+
+        <section
+            id="league"
+            class="page"
+        >
+
+
+            <div class="sectionHead">
+
+
+                <div>
+
+                    <p class="eyebrow">
+                        CHAMPIONSHIP
+                    </p>
+
+                    <h1>
+                        League Table
+                    </h1>
+
+                </div>
+
+
+                <span class="badge">
+
+                    3 PTS WIN
+
+                </span>
+
+
+            </div>
+
+
+
+            <div class="panel">
+
+
+                <div class="tableWrap">
+
+
+                    <table>
+
+
+                        <thead>
+
+
+                            <tr>
+
+                                <th>#</th>
+
+                                <th>TEAM</th>
+
+                                <th>P</th>
+
+                                <th>W</th>
+
+                                <th>D</th>
+
+                                <th>L</th>
+
+                                <th>GF</th>
+
+                                <th>GA</th>
+
+                                <th>GD</th>
+
+                                <th>PTS</th>
+
+                            </tr>
+
+
+                        </thead>
+
+
+
+                        <tbody id="leagueBody">
+                        </tbody>
+
+
+                    </table>
+
+
+                </div>
+
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- =====================
+             MATCHES
+        ====================== -->
+
+        <section
+            id="matches"
+            class="page"
+        >
+
+
+            <div class="sectionHead">
+
+
+                <div>
+
+                    <p class="eyebrow">
+                        MATCH CENTER
+                    </p>
+
+                    <h1>
+                        Results
+                    </h1>
+
+                </div>
+
+
+            </div>
+
+
+
+            <div
+                id="matchesList"
+                class="matchList"
+            >
+            </div>
+
+
+        </section>
+
+
+
+        <!-- =====================
+             STATISTICS
+        ====================== -->
+
+        <section
+            id="stats"
+            class="page"
+        >
+
+
+            <div class="sectionHead">
+
+
+                <div>
+
+                    <p class="eyebrow">
+                        PLAYER RANKINGS
+                    </p>
+
+                    <h1>
+                        Statistics
+                    </h1>
+
+                </div>
+
+
+            </div>
+
+
+
+            <div class="grid3">
+
+
+                <div class="panel">
+
+                    <h2>
+                        ⚽ Goals
+                    </h2>
+
+                    <div id="goals">
+                    </div>
+
+                </div>
+
+
+
+                <div class="panel">
+
+                    <h2>
+                        🎯 Assists
+                    </h2>
+
+                    <div id="assists">
+                    </div>
+
+                </div>
+
+
+
+                <div class="panel">
+
+                    <h2>
+                        🧤 Clean Sheets
+                    </h2>
+
+                    <div id="clean">
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+
+            <div class="grid2">
+
+
+                <div class="panel">
+
+                    <h2>
+                        ⭐ MVP
+                    </h2>
+
+                    <div id="mvps">
+                    </div>
+
+                </div>
+
+
+
+                <div class="panel">
+
+                    <h2>
+                        🟨 🟥 Cards
+                    </h2>
+
+                    <div id="cards">
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- =====================
+             TEAMS
+        ====================== -->
+
+        <section
+            id="teams"
+            class="page"
+        >
+
+
+            <div class="sectionHead">
+
+
+                <div>
+
+                    <p class="eyebrow">
+                        COMPETITORS
+                    </p>
+
+                    <h1>
+                        Teams & Players
+                    </h1>
+
+                </div>
+
+
+            </div>
+
+
+
+            <div
+                id="teamsGrid"
+                class="grid2"
+            >
+            </div>
+
+
+        </section>
+
+
+
+        <!-- =====================
+             ADMIN
+        ====================== -->
+
+        <section
+            id="admin"
+            class="page"
+        >
+
+
+            <div class="sectionHead">
+
+
+                <div>
+
+                    <p class="eyebrow">
+                        CONTROL ROOM
+                    </p>
+
+                    <h1>
+                        Admin Panel
+                    </h1>
+
+                    <p>
+
+                        Add matches, teams and players.
+
+                        League statistics update
+                        automatically.
+
+                    </p>
+
+                </div>
+
+
+            </div>
+
+
+
+            <div class="grid2">
+
+
+                <!-- ADD MATCH -->
+
+                <div class="panel">
+
+
+                    <h2>
+                        ➕ Add Match
+                    </h2>
+
+
+
+                    <form id="matchForm">
+
+
+                        <label>
+
+                            Date
+
+                            <input
+                                type="date"
+                                id="date"
+                            >
+
+                        </label>
+
+
+
+                        <div class="formrow">
+
+
+                            <label>
+
+                                Home Team
+
+                                <select id="homeTeam">
+                                </select>
+
+                            </label>
+
+
+
+                            <label>
+
+                                Away Team
+
+                                <select id="away">
+                                </select>
+
+                            </label>
+
+
+                        </div>
+
+
+
+                        <!-- SCORE -->
+
+                        <div class="score">
+
+
+                            <input
+                                type="number"
+                                id="hg"
+                                min="0"
+                                value="0"
+                            >
+
+
+                            <span>
+                                —
+                            </span>
+
+
+                            <input
+                                type="number"
+                                id="ag"
+                                min="0"
+                                value="0"
+                            >
+
+
+                        </div>
+
+
+
+                        <!-- SCORERS -->
+
+                        <label>
+
+                            Scorers
+
+                            <small>
+
+                                Separate players
+                                with commas.
+
+                                Repeat a player
+                                for multiple goals.
+
+                            </small>
+
+
+                            <textarea
+                                id="scorers"
+                                placeholder="Player One, Player One, Player Two"
+                            ></textarea>
+
+                        </label>
+
+
+
+                        <!-- ASSISTS -->
+
+                        <label>
+
+                            Assists
+
+                            <small>
+
+                                Separate players
+                                with commas.
+
+                            </small>
+
+
+                            <textarea
+                                id="assistsInput"
+                                placeholder="Player Three, Player Four"
+                            ></textarea>
+
+                        </label>
+
+
+
+                        <!-- CLEAN SHEET -->
+
+                        <label>
+
+                            Clean Sheet Goalkeeper
+
+                            <select id="cs">
+
+                                <option value="">
+                                    None
+                                </option>
+
+                            </select>
+
+                        </label>
+
+
+
+                        <!-- MVP -->
+
+                        <label>
+
+                            MVP
+
+                            <select id="mvp">
+
+                                <option value="">
+                                    None
+                                </option>
+
+                            </select>
+
+                        </label>
+
+
+
+                        <!-- CARDS -->
+
+                        <label>
+
+                            Cards
+
+                            <small>
+
+                                One player per line.
+
+                                Example:
+                                Player One - yellow
+
+                            </small>
+
+
+                            <textarea
+                                id="cardsInput"
+                                placeholder="Player One - yellow
+Player Two - red"
+                            ></textarea>
+
+                        </label>
+
+
+
+                        <button
+                            class="primary"
+                            type="submit"
+                        >
+
+                            ADD MATCH
+
+                        </button>
+
+
+                        <div id="formMsg">
+                        </div>
+
+
+                    </form>
+
+
+                </div>
+
+
+
+                <!-- MANAGE -->
+
+                <div class="panel">
+
+
+                    <h2>
+                        Manage League
+                    </h2>
+
+
+
+                    <div class="manage">
+
+
+                        <!-- TEAM -->
+
+                        <h3>
+                            Add Team
+                        </h3>
+
+
+                        <input
+                            id="newTeam"
+                            placeholder="Team name"
+                        >
+
+
+                        <button
+                            onclick="addTeam()"
+                        >
+
+                            Add Team
+
+                        </button>
+
+
+
+                        <!-- PLAYER -->
+
+                        <h3>
+                            Add Player
+                        </h3>
+
+
+                        <input
+                            id="newPlayer"
+                            placeholder="Player name"
+                        >
+
+
+                        <select id="playerTeam">
+                        </select>
+
+
+                        <select id="position">
+
+                            <option value="GK">
+                                Goalkeeper
+                            </option>
+
+                            <option value="DF">
+                                Defender
+                            </option>
+
+                            <option value="MF">
+                                Midfielder
+                            </option>
+
+                            <option value="FW">
+                                Forward
+                            </option>
+
+                        </select>
+
+
+                        <button
+                            onclick="addPlayer()"
+                        >
+
+                            Add Player
+
+                        </button>
+
+
+                    </div>
+
+
+
+                    <h3
+                        style="margin-top:30px;"
+                    >
+
+                        Existing Matches
+
+                    </h3>
+
+
+                    <div id="adminMatches">
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+        </section>
+
+
+    </main>
+
+
+
+    <!-- =========================
+         FOOTER
+    ========================== -->
+
+    <footer>
+
+        ABATERA LEAGUE • 7v7 LEAGUE
+
+    </footer>
+
+
+
+    <!-- IMPORTANT -->
+    <script src="app.js"></script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,203 @@
+{
+  "league": {
+    "name": "MARBALL 7v7",
+    "season": "Season 2026",
+    "pointsWin": 3,
+    "pointsDraw": 1
+  },
+  "teams": [
+  {
+    "id": "rss",
+    "name": "Renaissance Sportive de Settat",
+    "short": "RSS",
+    "logo": "assets/rss.png"
+  },
+  {
+    "id": "asfar",
+    "name": "Association Sportive des FAR",
+    "short": "AS FAR",
+    "logo": "assets/asfar.png"
+  },
+  {
+    "id": "raja",
+    "name": "Raja Club Athletic",
+    "short": "RCA",
+    "logo": "assets/raja.png"
+  }
+],
+
+"players": [
+  {
+    "id": "rss1",
+    "name": "𝓒𝓬 𝓩𝓲𝓷",
+    "teamId": "rss",
+    "position": ""
+  },
+  {
+    "id": "rss2",
+    "name": "Master",
+    "teamId": "rss",
+    "position": ""
+  },
+  {
+    "id": "rss3",
+    "name": "pain",
+    "teamId": "rss",
+    "position": ""
+  },
+  {
+    "id": "rss4",
+    "name": "ravran",
+    "teamId": "rss",
+    "position": ""
+  },
+  {
+    "id": "rss5",
+    "name": "th",
+    "teamId": "rss",
+    "position": ""
+  },
+  {
+    "id": "rss6",
+    "name": "lamine",
+    "teamId": "rss",
+    "position": ""
+  },
+  {
+    "id": "rss7",
+    "name": "ᴹᴬᴿFITOCHIッ",
+    "teamId": "rss",
+    "position": ""
+  },
+  {
+    "id": "rss8",
+    "name": "Zov1x",
+    "teamId": "rss",
+    "position": ""
+  },
+  {
+    "id": "rss9",
+    "name": "riad",
+    "teamId": "rss",
+    "position": ""
+  },
+  {
+    "id": "rss10",
+    "name": "ᴍᴇssɪ ²²²",
+    "teamId": "rss",
+    "position": ""
+  },
+
+  {
+    "id": "far1",
+    "name": "aRtix",
+    "teamId": "asfar",
+    "position": ""
+  },
+  {
+    "id": "far2",
+    "name": "DollY",
+    "teamId": "asfar",
+    "position": ""
+  },
+  {
+    "id": "far3",
+    "name": "Mehdi",
+    "teamId": "asfar",
+    "position": ""
+  },
+  {
+    "id": "far4",
+    "name": "Kvrem",
+    "teamId": "asfar",
+    "position": ""
+  },
+  {
+    "id": "far5",
+    "name": "hitoc",
+    "teamId": "asfar",
+    "position": ""
+  },
+  {
+    "id": "far6",
+    "name": "Bougrine",
+    "teamId": "asfar",
+    "position": ""
+  },
+  {
+    "id": "far7",
+    "name": "ExFIBO",
+    "teamId": "asfar",
+    "position": ""
+  },
+  {
+    "id": "far8",
+    "name": "Lee",
+    "teamId": "asfar",
+    "position": ""
+  },
+  {
+    "id": "far9",
+    "name": "Touga",
+    "teamId": "asfar",
+    "position": ""
+  },
+  {
+    "id": "far10",
+    "name": "l3obi",
+    "teamId": "asfar",
+    "position": ""
+  },
+  {
+    "id": "far11",
+    "name": "Zikoues",
+    "teamId": "asfar",
+    "position": ""
+  },
+
+  {
+    "id": "raja1",
+    "name": "Cipher Pol.",
+    "teamId": "raja",
+    "position": ""
+  },
+  {
+    "id": "raja2",
+    "name": "Clix_Lbandix",
+    "teamId": "raja",
+    "position": ""
+  },
+  {
+    "id": "raja3",
+    "name": "Nasser",
+    "teamId": "raja",
+    "position": ""
+  },
+  {
+    "id": "raja4",
+    "name": "𝓐𝓪𝓶𝓪𝓻𝓮",
+    "teamId": "raja",
+    "position": ""
+  },
+  {
+    "id": "raja5",
+    "name": "gushalookingforpeace",
+    "teamId": "raja",
+    "position": ""
+  },
+  {
+    "id": "raja6",
+    "name": "R4ycon",
+    "teamId": "raja",
+    "position": ""
+  },
+      {
+      "id": "raja7",
+      "name": "slicx?",
+      "teamId": "raja",
+      "position": ""
+    }
+  ],
+
+  "matches": []
+}
