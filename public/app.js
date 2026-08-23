@@ -2507,3 +2507,47 @@ async function deletePlayer(id) {
 
 load();
 checkAdmin();
+
+
+// ======================================================
+// ABATERA AUTOMATIC COLOR THEMES
+// Changes every 5 seconds
+// ======================================================
+
+const abateraThemes = [
+    "theme-blue",
+    "theme-green",
+    "theme-red",
+    "theme-yellow",
+    "theme-purple"
+];
+
+let abateraThemeIndex = 0;
+
+function changeAbateraTheme() {
+
+    document.body.classList.remove(
+        ...abateraThemes
+    );
+
+    document.body.classList.add(
+        abateraThemes[abateraThemeIndex]
+    );
+
+    abateraThemeIndex++;
+
+    if (abateraThemeIndex >= abateraThemes.length) {
+        abateraThemeIndex = 0;
+    }
+}
+
+
+// Start immediately with blue
+changeAbateraTheme();
+
+
+// Change every 5 seconds
+setInterval(
+    changeAbateraTheme,
+    5000
+);
