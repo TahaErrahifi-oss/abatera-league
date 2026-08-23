@@ -1909,3 +1909,29 @@ body[class*="theme-"]
 #adminPlayersList::-webkit-scrollbar-thumb {
     background: var(--green);
 }
+
+
+/* ============================
+   ABATERA MAIN LOGO
+============================ */
+
+.brandLogo {
+    width: 52px;
+    height: 52px;
+
+    object-fit: contain;
+
+    border-radius: 12px;
+
+    transition:
+        transform 0.3s ease,
+        filter 0.3s ease;
+}
+
+.brandLogo:hover {
+    transform: scale(1.12) rotate(-3deg);
+
+    filter:
+        drop-shadow(0 0 10px var(--green))
+        drop-shadow(0 0 20px var(--green));
+}
