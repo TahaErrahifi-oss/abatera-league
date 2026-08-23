@@ -34,16 +34,36 @@ function player(id) {
 
 function showPage(id) {
 
-    $$(".page").forEach((page) => {
-        page.classList.toggle("active", page.id === id);
-    });
+    document
+        .querySelectorAll(".page")
+        .forEach((page) => {
 
-    $$("nav button").forEach((button) => {
-        button.classList.toggle(
-            "active",
-            button.dataset.page === id
-        );
-    });
+            page.classList.toggle(
+                "active",
+                page.id === id
+            );
+
+        });
+
+
+    document
+        .querySelectorAll("nav button")
+        .forEach((button) => {
+
+            button.classList.toggle(
+                "active",
+                button.dataset.page === id
+            );
+
+        });
+
+
+    if (id === "admin") {
+
+        checkAdmin();
+
+    }
+
 
     window.scrollTo(0, 0);
 }
@@ -1840,33 +1860,57 @@ async function delMatch(id) {
 
 async function checkAdmin() {
 
-    const response =
-        await fetch("/api/admin-status");
+    try {
 
-    const data =
-        await response.json();
-
-    const login =
-        document.querySelector("#adminLogin");
-
-    const content =
-        document.querySelector("#adminContent");
+        const response =
+            await fetch("/api/admin-status");
 
 
-    if (data.loggedIn) {
+        const data =
+            await response.json();
 
-        login.style.display = "none";
-        content.style.display = "block";
 
-    } else {
+        const login =
+            document.querySelector("#adminLogin");
 
-        login.style.display = "block";
-        content.style.display = "none";
+
+        const content =
+            document.querySelector("#adminContent");
+
+
+        if (!login || !content) {
+            return;
+        }
+
+
+        if (data.loggedIn) {
+
+            login.style.display = "none";
+            content.style.display = "block";
+
+            renderAdminManagement();
+
+        }
+
+        else {
+
+            login.style.display = "block";
+            content.style.display = "none";
+
+        }
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Admin status error:",
+            error
+        );
 
     }
 
 }
-
 
 async function adminLogin() {
 
@@ -1928,6 +1972,535 @@ async function adminLogout() {
 
 }
 
+
+// ======================================================
+// ADMIN MANAGEMENT
+// ======================================================
+
+function renderAdminManagement() {
+
+    renderAdminTeams();
+
+    renderAdminPlayers();
+
+}
+
+
+// ======================================================
+// MANAGE TEAMS
+// ======================================================
+
+function renderAdminTeams() {
+
+    const container =
+        document.querySelector("#adminTeamsList");
+
+
+    if (!container) {
+        return;
+    }
+
+
+    container.innerHTML =
+        D.teams.map((team) => `
+
+            <div class="adminManageCard">
+
+                <div class="adminManageHeader">
+
+                    <strong>
+                        ${esc(team.name)}
+                    </strong>
+
+                    <span>
+                        ${esc(team.short || "")}
+                    </span>
+
+                </div>
+
+
+                <label>
+
+                    Team name
+
+                    <input
+                        id="team-name-${team.id}"
+                        value="${esc(team.name)}"
+                    >
+
+                </label>
+
+
+                <label>
+
+                    Short name
+
+                    <input
+                        id="team-short-${team.id}"
+                        value="${esc(team.short || "")}"
+                    >
+
+                </label>
+
+
+                <label>
+
+                    Logo path
+
+                    <input
+                        id="team-logo-${team.id}"
+                        value="${esc(team.logo || "")}"
+                        placeholder="assets/raja.png"
+                    >
+
+                </label>
+
+
+                <div class="adminActions">
+
+                    <button
+                        class="primary smallButton"
+                        onclick="updateTeam('${team.id}')"
+                    >
+                        💾 Save
+                    </button>
+
+
+                    <button
+                        class="delete"
+                        onclick="deleteTeam('${team.id}')"
+                    >
+                        🗑 Delete
+                    </button>
+
+                </div>
+
+            </div>
+
+        `).join("");
+
+}
+
+
+// ======================================================
+// UPDATE TEAM
+// ======================================================
+
+async function updateTeam(id) {
+
+    const name =
+        document
+            .querySelector(
+                `#team-name-${id}`
+            )
+            .value
+            .trim();
+
+
+    const short =
+        document
+            .querySelector(
+                `#team-short-${id}`
+            )
+            .value
+            .trim();
+
+
+    const logo =
+        document
+            .querySelector(
+                `#team-logo-${id}`
+            )
+            .value
+            .trim();
+
+
+    const response =
+        await fetch(
+            `/api/teams/${id}`,
+            {
+
+                method: "PATCH",
+
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
+
+                body:
+                    JSON.stringify({
+                        name,
+                        short,
+                        logo
+                    })
+
+            }
+        );
+
+
+    const result =
+        await response.json();
+
+
+    if (!response.ok) {
+
+        alert(
+            result.error ||
+            "Could not update team."
+        );
+
+        return;
+
+    }
+
+
+    await load();
+
+    renderAdminManagement();
+
+}
+
+
+// ======================================================
+// DELETE TEAM
+// ======================================================
+
+async function deleteTeam(id) {
+
+    const selectedTeam =
+        D.teams.find(
+            team => team.id === id
+        );
+
+
+    if (!selectedTeam) {
+        return;
+    }
+
+
+    const confirmed =
+        confirm(
+            `Delete "${selectedTeam.name}"?\n\n` +
+            `Delete its players and matches first if necessary.`
+        );
+
+
+    if (!confirmed) {
+        return;
+    }
+
+
+    const response =
+        await fetch(
+            `/api/teams/${id}`,
+            {
+                method: "DELETE"
+            }
+        );
+
+
+    const result =
+        await response.json();
+
+
+    if (!response.ok) {
+
+        alert(
+            result.error ||
+            "Could not delete team."
+        );
+
+        return;
+
+    }
+
+
+    await load();
+
+    renderAdminManagement();
+
+}
+
+
+// ======================================================
+// MANAGE PLAYERS
+// ======================================================
+
+function renderAdminPlayers() {
+
+    const container =
+        document.querySelector(
+            "#adminPlayersList"
+        );
+
+
+    if (!container) {
+        return;
+    }
+
+
+    container.innerHTML =
+        D.players.map((player) => `
+
+            <div class="adminManageCard">
+
+                <strong>
+                    ${esc(player.name)}
+                </strong>
+
+
+                <label>
+
+                    Player name
+
+                    <input
+                        id="player-name-${player.id}"
+                        value="${esc(player.name)}"
+                    >
+
+                </label>
+
+
+                <label>
+
+                    Team
+
+                    <select
+                        id="player-team-${player.id}"
+                    >
+
+                        ${D.teams.map((team) => `
+
+                            <option
+                                value="${team.id}"
+
+                                ${
+                                    team.id === player.teamId
+                                        ? "selected"
+                                        : ""
+                                }
+                            >
+
+                                ${esc(team.name)}
+
+                            </option>
+
+                        `).join("")}
+
+                    </select>
+
+                </label>
+
+
+                <label>
+
+                    Position
+
+                    <select
+                        id="player-position-${player.id}"
+                    >
+
+                        <option
+                            value=""
+                            ${!player.position ? "selected" : ""}
+                        >
+                            No position
+                        </option>
+
+                        <option
+                            value="GK"
+                            ${player.position === "GK" ? "selected" : ""}
+                        >
+                            GK
+                        </option>
+
+                        <option
+                            value="DF"
+                            ${player.position === "DF" ? "selected" : ""}
+                        >
+                            DF
+                        </option>
+
+                        <option
+                            value="MF"
+                            ${player.position === "MF" ? "selected" : ""}
+                        >
+                            MF
+                        </option>
+
+                        <option
+                            value="FW"
+                            ${player.position === "FW" ? "selected" : ""}
+                        >
+                            FW
+                        </option>
+
+                    </select>
+
+                </label>
+
+
+                <div class="adminActions">
+
+                    <button
+                        class="primary smallButton"
+                        onclick="updatePlayer('${player.id}')"
+                    >
+                        💾 Save
+                    </button>
+
+
+                    <button
+                        class="delete"
+                        onclick="deletePlayer('${player.id}')"
+                    >
+                        🗑 Delete
+                    </button>
+
+                </div>
+
+            </div>
+
+        `).join("");
+
+}
+
+
+// ======================================================
+// UPDATE PLAYER
+// ======================================================
+
+async function updatePlayer(id) {
+
+    const name =
+        document
+            .querySelector(
+                `#player-name-${id}`
+            )
+            .value
+            .trim();
+
+
+    const teamId =
+        document
+            .querySelector(
+                `#player-team-${id}`
+            )
+            .value;
+
+
+    const position =
+        document
+            .querySelector(
+                `#player-position-${id}`
+            )
+            .value;
+
+
+    const response =
+        await fetch(
+            `/api/players/${id}`,
+            {
+
+                method: "PATCH",
+
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
+
+                body:
+                    JSON.stringify({
+                        name,
+                        teamId,
+                        position
+                    })
+
+            }
+        );
+
+
+    const result =
+        await response.json();
+
+
+    if (!response.ok) {
+
+        alert(
+            result.error ||
+            "Could not update player."
+        );
+
+        return;
+
+    }
+
+
+    await load();
+
+    renderAdminManagement();
+
+}
+
+
+// ======================================================
+// DELETE PLAYER
+// ======================================================
+
+async function deletePlayer(id) {
+
+    const selectedPlayer =
+        D.players.find(
+            player => player.id === id
+        );
+
+
+    if (!selectedPlayer) {
+        return;
+    }
+
+
+    const confirmed =
+        confirm(
+            `Delete player "${selectedPlayer.name}"?`
+        );
+
+
+    if (!confirmed) {
+        return;
+    }
+
+
+    const response =
+        await fetch(
+            `/api/players/${id}`,
+            {
+                method: "DELETE"
+            }
+        );
+
+
+    const result =
+        await response.json();
+
+
+    if (!response.ok) {
+
+        alert(
+            result.error ||
+            "Could not delete player."
+        );
+
+        return;
+
+    }
+
+
+    await load();
+
+    renderAdminManagement();
+
+}
 // ======================================================
 // START MARBALL
 // ======================================================

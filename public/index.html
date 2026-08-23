@@ -98,57 +98,7 @@
             id="home"
             class="page active"
         >
-<div id="adminLogin" class="panel">
 
-    <h2>🔐 Admin Login</h2>
-
-    <p class="details">
-        Only ABATERA League administrators can access this area.
-    </p>
-
-    <label>
-        Username
-        <input
-            type="text"
-            id="adminUsername"
-            placeholder="Username"
-        >
-    </label>
-
-    <label>
-        Password
-        <input
-            type="password"
-            id="adminPassword"
-            placeholder="Password"
-        >
-    </label>
-
-    <button
-        class="primary"
-        onclick="adminLogin()"
-    >
-        LOGIN
-    </button>
-
-    <p id="loginMessage"></p>
-
-
-    <button
-    class="delete"
-    onclick="adminLogout()"
->
-    Logout
-</button>
-
-</div>
-
-
-<div id="adminContent" style="display:none;">
-
-    <!-- PUT YOUR CURRENT ADMIN CONTENT HERE -->
-
-</div>
 
             <div class="hero">
 
@@ -542,6 +492,57 @@
         <section
             id="admin"
             class="page"
+            <div id="adminLogin" class="panel">
+
+    <h2>🔐 Admin Login</h2>
+
+    <p class="details">
+        Only ABATERA League administrators can access this area.
+    </p>
+
+    <label>
+        Username
+        <input
+            type="text"
+            id="adminUsername"
+            placeholder="Username"
+        >
+    </label>
+
+    <label>
+        Password
+        <input
+            type="password"
+            id="adminPassword"
+            placeholder="Password"
+        >
+    </label>
+
+    <button
+        class="primary"
+        onclick="adminLogin()"
+    >
+        LOGIN
+    </button>
+
+    <p id="loginMessage"></p>
+
+
+    <button
+    class="delete"
+    onclick="adminLogout()"
+>
+    Logout
+</button>
+
+</div>
+
+
+<div id="adminContent" style="display:none;">
+
+    <!-- PUT YOUR CURRENT ADMIN CONTENT HERE -->
+
+</div>
         >
 
 
@@ -799,6 +800,7 @@ Player Two - red"
                 <div class="panel">
 
 
+                
                     <h2>
                         Manage League
                     </h2>

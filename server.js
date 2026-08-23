@@ -888,7 +888,417 @@ app.post(
     }
 );
 
+app.patch(
+    "/api/teams/:id",
 
+    requireAdmin,
+
+    async (req, res) => {
+
+        try {
+
+            const data =
+                await readData();
+
+
+            const team =
+                data.teams.find(
+                    team =>
+                        team.id === req.params.id
+                );
+
+
+            if (!team) {
+
+                return res
+                    .status(404)
+                    .json({
+                        error:
+                            "Team not found."
+                    });
+
+            }
+
+
+            if (
+                typeof req.body.name
+                === "string"
+                &&
+                req.body.name.trim()
+            ) {
+
+                team.name =
+                    req.body.name.trim();
+
+            }
+
+
+            if (
+                typeof req.body.short
+                === "string"
+            ) {
+
+                team.short =
+                    req.body.short.trim();
+
+            }
+
+
+            if (
+                typeof req.body.logo
+                === "string"
+            ) {
+
+                team.logo =
+                    req.body.logo.trim();
+
+            }
+
+
+            await writeData(data);
+
+
+            res.json(team);
+
+        }
+
+        catch (error) {
+
+            console.error(error);
+
+
+            res.status(500).json({
+                error:
+                    "Could not update team."
+            });
+
+        }
+
+    }
+);
+app.delete(
+    "/api/teams/:id",
+
+    requireAdmin,
+
+    async (req, res) => {
+
+        try {
+
+            const data =
+                await readData();
+
+
+            const teamId =
+                req.params.id;
+
+
+            const team =
+                data.teams.find(
+                    team =>
+                        team.id === teamId
+                );
+
+
+            if (!team) {
+
+                return res
+                    .status(404)
+                    .json({
+                        error:
+                            "Team not found."
+                    });
+
+            }
+
+
+            const hasPlayers =
+                data.players.some(
+                    player =>
+                        player.teamId === teamId
+                );
+
+
+            if (hasPlayers) {
+
+                return res
+                    .status(400)
+                    .json({
+                        error:
+                            "Delete this team's players first."
+                    });
+
+            }
+
+
+            const hasMatches =
+                data.matches.some(
+                    match =>
+                        match.homeTeamId === teamId
+                        ||
+                        match.awayTeamId === teamId
+                );
+
+
+            if (hasMatches) {
+
+                return res
+                    .status(400)
+                    .json({
+                        error:
+                            "Delete this team's matches first."
+                    });
+
+            }
+
+
+            data.teams =
+                data.teams.filter(
+                    team =>
+                        team.id !== teamId
+                );
+
+
+            await writeData(data);
+
+
+            res.json({
+                ok: true
+            });
+
+        }
+
+        catch (error) {
+
+            console.error(error);
+
+
+            res.status(500).json({
+                error:
+                    "Could not delete team."
+            });
+
+        }
+
+    }
+);
+app.patch(
+    "/api/players/:id",
+
+    requireAdmin,
+
+    async (req, res) => {
+
+        try {
+
+            const data =
+                await readData();
+
+
+            const player =
+                data.players.find(
+                    player =>
+                        player.id === req.params.id
+                );
+
+
+            if (!player) {
+
+                return res
+                    .status(404)
+                    .json({
+                        error:
+                            "Player not found."
+                    });
+
+            }
+
+
+            if (
+                typeof req.body.name
+                === "string"
+                &&
+                req.body.name.trim()
+            ) {
+
+                player.name =
+                    req.body.name.trim();
+
+            }
+
+
+            if (
+                req.body.teamId
+                &&
+                data.teams.some(
+                    team =>
+                        team.id
+                        === req.body.teamId
+                )
+            ) {
+
+                player.teamId =
+                    req.body.teamId;
+
+            }
+
+
+            if (
+                typeof req.body.position
+                === "string"
+            ) {
+
+                player.position =
+                    req.body.position;
+
+            }
+
+
+            await writeData(data);
+
+
+            res.json(player);
+
+        }
+
+        catch (error) {
+
+            console.error(error);
+
+
+            res.status(500).json({
+                error:
+                    "Could not update player."
+            });
+
+        }
+
+    }
+);
+app.delete(
+    "/api/players/:id",
+
+    requireAdmin,
+
+    async (req, res) => {
+
+        try {
+
+            const data =
+                await readData();
+
+
+            const playerId =
+                req.params.id;
+
+
+            const exists =
+                data.players.some(
+                    player =>
+                        player.id === playerId
+                );
+
+
+            if (!exists) {
+
+                return res
+                    .status(404)
+                    .json({
+                        error:
+                            "Player not found."
+                    });
+
+            }
+
+
+            data.players =
+                data.players.filter(
+                    player =>
+                        player.id !== playerId
+                );
+
+
+            /*
+             Remove deleted player from old
+             match statistics as well.
+            */
+
+            data.matches.forEach(
+                match => {
+
+                    match.scorers =
+                        (match.scorers || [])
+                            .filter(
+                                id =>
+                                    id !== playerId
+                            );
+
+
+                    match.assists =
+                        (match.assists || [])
+                            .filter(
+                                id =>
+                                    id !== playerId
+                            );
+
+
+                    if (
+                        match.cleanSheetPlayerId
+                        === playerId
+                    ) {
+
+                        match.cleanSheetPlayerId =
+                            null;
+
+                    }
+
+
+                    if (
+                        match.mvpPlayerId
+                        === playerId
+                    ) {
+
+                        match.mvpPlayerId =
+                            null;
+
+                    }
+
+
+                    match.cards =
+                        (match.cards || [])
+                            .filter(
+                                card =>
+                                    card.playerId
+                                    !== playerId
+                            );
+
+                }
+            );
+
+
+            await writeData(data);
+
+
+            res.json({
+                ok: true
+            });
+
+        }
+
+        catch (error) {
+
+            console.error(error);
+
+
+            res.status(500).json({
+                error:
+                    "Could not delete player."
+            });
+
+        }
+
+    }
+);
 // ======================================================
 // WEBSITE
 // ======================================================

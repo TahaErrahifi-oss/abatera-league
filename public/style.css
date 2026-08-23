@@ -51,3 +51,80 @@
     opacity: 0.55;
     margin-left: 8px;
 }
+
+
+/* ========================================
+   ADMIN MANAGEMENT
+======================================== */
+
+.adminManageCard {
+    background: rgba(255, 255, 255, 0.025);
+
+    border: 1px solid rgba(255, 255, 255, 0.08);
+
+    border-radius: 14px;
+
+    padding: 16px;
+
+    margin-bottom: 12px;
+}
+
+
+.adminManageHeader {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    margin-bottom: 14px;
+}
+
+
+.adminManageHeader span {
+    color: #63e6a2;
+
+    font-size: 12px;
+
+    font-weight: 700;
+}
+
+
+.adminActions {
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    margin-top: 14px;
+}
+
+
+.smallButton {
+    margin-top: 0;
+}
+
+
+#adminTeamsList,
+#adminPlayersList {
+    max-height: 700px;
+
+    overflow-y: auto;
+
+    padding-right: 5px;
+}
+
+
+#adminTeamsList::-webkit-scrollbar,
+#adminPlayersList::-webkit-scrollbar {
+    width: 5px;
+}
+
+
+#adminTeamsList::-webkit-scrollbar-thumb,
+#adminPlayersList::-webkit-scrollbar-thumb {
+    background: rgba(99, 230, 162, 0.35);
+
+    border-radius: 10px;
+}
