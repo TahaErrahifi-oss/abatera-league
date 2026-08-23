@@ -1544,3 +1544,368 @@ footer {
     }
 
 }
+
+/* =========================================================
+   ABATERA AUTOMATIC THEME SYSTEM
+   Blue → Green → Red → Yellow → Purple
+========================================================= */
+
+/* Smooth transition when theme changes */
+body,
+header,
+.card,
+.panel,
+.match,
+.teamCard,
+.teamLogoBox,
+.adminManageCard,
+button,
+input,
+select,
+textarea,
+.badge,
+.player,
+.scorebig,
+.brand small,
+.eyebrow,
+.rank,
+.statrow b {
+    transition:
+        background-color 1.2s ease,
+        background 1.2s ease,
+        color 1.2s ease,
+        border-color 1.2s ease,
+        box-shadow 1.2s ease,
+        filter 1.2s ease;
+}
+
+
+/* =======================
+   🔵 BLUE
+======================= */
+
+body.theme-blue {
+    --bg: #050914;
+    --panel: #0a1428;
+    --panel2: #102044;
+    --line: #1d3d6e;
+
+    --text: #f3f8ff;
+    --muted: #8da7c9;
+
+    --green: #4da6ff;
+    --danger: #ff6680;
+
+    font-family:
+        "Trebuchet MS",
+        Arial,
+        sans-serif;
+
+    background:
+        radial-gradient(
+            circle at 80% 0%,
+            #123e78 0,
+            #050914 42%
+        );
+}
+
+
+/* =======================
+   🟢 GREEN
+======================= */
+
+body.theme-green {
+    --bg: #07100d;
+    --panel: #0d1a15;
+    --panel2: #12221b;
+    --line: #20352b;
+
+    --text: #f2f6f3;
+    --muted: #91a49a;
+
+    --green: #63e6a2;
+    --danger: #ff6b6b;
+
+    font-family:
+        Inter,
+        Arial,
+        sans-serif;
+
+    background:
+        radial-gradient(
+            circle at 80% 0%,
+            #123c29 0,
+            #07100d 42%
+        );
+}
+
+
+/* =======================
+   🔴 RED
+======================= */
+
+body.theme-red {
+    --bg: #120606;
+    --panel: #211010;
+    --panel2: #321515;
+    --line: #542525;
+
+    --text: #fff4f4;
+    --muted: #c39a9a;
+
+    --green: #ff5c5c;
+    --danger: #ffbd5c;
+
+    font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+    background:
+        radial-gradient(
+            circle at 80% 0%,
+            #681b1b 0,
+            #120606 42%
+        );
+}
+
+
+/* =======================
+   🟡 YELLOW / GOLD
+======================= */
+
+body.theme-yellow {
+    --bg: #100d04;
+    --panel: #1c180b;
+    --panel2: #2b250e;
+    --line: #51461b;
+
+    --text: #fffbea;
+    --muted: #b9ae79;
+
+    --green: #ffd84d;
+    --danger: #ff6969;
+
+    font-family:
+        "Arial Black",
+        Arial,
+        sans-serif;
+
+    background:
+        radial-gradient(
+            circle at 80% 0%,
+            #655113 0,
+            #100d04 42%
+        );
+}
+
+
+/* =======================
+   🟣 PURPLE
+======================= */
+
+body.theme-purple {
+    --bg: #0c0613;
+    --panel: #170d23;
+    --panel2: #241337;
+    --line: #45245f;
+
+    --text: #fbf5ff;
+    --muted: #aa91bd;
+
+    --green: #c66cff;
+    --danger: #ff668f;
+
+    font-family:
+        Verdana,
+        Arial,
+        sans-serif;
+
+    background:
+        radial-gradient(
+            circle at 80% 0%,
+            #4c176e 0,
+            #0c0613 42%
+        );
+}
+
+
+/* =========================================================
+   MAKE HERO FOLLOW CURRENT THEME
+========================================================= */
+
+body[class*="theme-"] .hero {
+    background:
+        radial-gradient(
+            circle at 85% 30%,
+            color-mix(
+                in srgb,
+                var(--green) 18%,
+                transparent
+            ),
+            transparent 35%
+        ),
+        linear-gradient(
+            135deg,
+            var(--panel2),
+            var(--bg) 70%
+        );
+
+    border-color:
+        color-mix(
+            in srgb,
+            var(--green) 30%,
+            var(--line)
+        );
+}
+
+
+/* =========================================================
+   PANELS
+========================================================= */
+
+body[class*="theme-"] .panel,
+body[class*="theme-"] .card,
+body[class*="theme-"] .match {
+    background:
+        linear-gradient(
+            145deg,
+            var(--panel),
+            var(--bg)
+        );
+}
+
+
+/* =========================================================
+   ACTIVE NAV
+========================================================= */
+
+body[class*="theme-"] nav button.active {
+    color: var(--bg);
+
+    background: var(--green);
+
+    box-shadow:
+        0 0 20px
+        color-mix(
+            in srgb,
+            var(--green) 35%,
+            transparent
+        );
+}
+
+
+/* =========================================================
+   PRIMARY BUTTON
+========================================================= */
+
+body[class*="theme-"] .primary {
+    color: var(--bg);
+
+    background: var(--green);
+
+    box-shadow:
+        0 0 22px
+        color-mix(
+            in srgb,
+            var(--green) 25%,
+            transparent
+        );
+}
+
+
+/* =========================================================
+   CURRENT ACCENT ELEMENTS
+========================================================= */
+
+body[class*="theme-"] .eyebrow,
+body[class*="theme-"] .brand small,
+body[class*="theme-"] .rank,
+body[class*="theme-"] .statrow b {
+    color: var(--green);
+}
+
+
+body[class*="theme-"] .badge {
+    color: var(--green);
+
+    border-color:
+        color-mix(
+            in srgb,
+            var(--green) 40%,
+            transparent
+        );
+}
+
+
+/* =========================================================
+   INPUT FOCUS
+========================================================= */
+
+body[class*="theme-"] input:focus,
+body[class*="theme-"] select:focus,
+body[class*="theme-"] textarea:focus {
+    outline: none;
+
+    border-color: var(--green);
+
+    box-shadow:
+        0 0 0 3px
+        color-mix(
+            in srgb,
+            var(--green) 15%,
+            transparent
+        );
+}
+
+
+/* =========================================================
+   LOGO GLOW
+========================================================= */
+
+body[class*="theme-"] .teamLogoBox {
+    border-color:
+        color-mix(
+            in srgb,
+            var(--green) 25%,
+            transparent
+        );
+
+    box-shadow:
+        0 0 25px
+        color-mix(
+            in srgb,
+            var(--green) 8%,
+            transparent
+        );
+}
+
+
+/* =========================================================
+   TEAM CARD HOVER
+========================================================= */
+
+body[class*="theme-"] .teamCard:hover {
+    border-color: var(--green);
+
+    box-shadow:
+        0 15px 40px
+        color-mix(
+            in srgb,
+            var(--green) 12%,
+            transparent
+        );
+}
+
+
+/* =========================================================
+   SCROLLBAR
+========================================================= */
+
+body[class*="theme-"]
+#adminTeamsList::-webkit-scrollbar-thumb,
+
+body[class*="theme-"]
+#adminPlayersList::-webkit-scrollbar-thumb {
+    background: var(--green);
+}
