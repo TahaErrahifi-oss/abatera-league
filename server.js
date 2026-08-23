@@ -1,83 +1,951 @@
 import express from "express";
 import fs from "fs";
 import path from "path";
-import {fileURLToPath} from "url";
 import session from "express-session";
-const __dirname=path.dirname(fileURLToPath(import.meta.url)),app=express(),PORT=process.env.PORT||3000,DATA=path.join(__dirname,"data.json");
-const seed={league:{name:"MARBALL 7v7",season:"Season 2026",pointsWin:3,pointsDraw:1},teams:[{id:"t1",name:"MARBALL FC",short:"MFC"},{id:"t2",name:"RABAT FC",short:"RFC"},{id:"t3",name:"CASA FC",short:"CFC"},{id:"t4",name:"TANGER FC",short:"TFC"}],players:[{id:"p1",name:"Player One",teamId:"t1",position:"GK"},{id:"p2",name:"Player Two",teamId:"t1",position:"FW"},{id:"p3",name:"Player Three",teamId:"t1",position:"MF"},{id:"p4",name:"Player Four",teamId:"t2",position:"GK"},{id:"p5",name:"Player Five",teamId:"t2",position:"FW"},{id:"p6",name:"Player Six",teamId:"t2",position:"MF"},{id:"p7",name:"Player Seven",teamId:"t3",position:"GK"},{id:"p8",name:"Player Eight",teamId:"t3",position:"FW"},{id:"p9",name:"Player Nine",teamId:"t4",position:"GK"},{id:"p10",name:"Player Ten",teamId:"t4",position:"FW"}],matches:[]};
-if(!fs.existsSync(DATA))fs.writeFileSync(DATA,JSON.stringify(seed,null,2));
-const read=()=>JSON.parse(fs.readFileSync(DATA,"utf8")),write=d=>fs.writeFileSync(DATA,JSON.stringify(d,null,2));
-app.use(express.json());app.use(
-    session({
-        secret: process.env.SESSION_SECRET || "change-this-secret",
-        resave: false,
-        saveUninitialized: false,
-        cookie: {
-            httpOnly: true,
-            sameSite: "lax",
-            secure: process.env.NODE_ENV === "production",
-            maxAge: 1000 * 60 * 60 * 12
-        }
+import pg from "pg";
+import { fileURLToPath } from "url";
+
+const { Pool } = pg;
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+const app = express();
+
+const PORT = process.env.PORT || 3000;
+
+const DATA = path.join(__dirname, "data.json");
+
+
+// ======================================================
+// POSTGRESQL
+// ======================================================
+
+const pool = process.env.DATABASE_URL
+    ? new Pool({
+        connectionString: process.env.DATABASE_URL
     })
-);app.use(express.static(path.join(__dirname,"public")));
-app.get("/api/data",(_,res)=>res.json(read()));
-app.post("/api/matches",(req,res)=>{const d=read(),m=req.body;if(!m.homeTeamId||!m.awayTeamId||m.homeTeamId===m.awayTeamId)return res.status(400).json({error:"Choose two different teams."});m.homeGoals=Number(m.homeGoals);m.awayGoals=Number(m.awayGoals);if(!Number.isInteger(m.homeGoals)||!Number.isInteger(m.awayGoals)||m.homeGoals<0||m.awayGoals<0)return res.status(400).json({error:"Invalid score."});m.id="m"+Date.now();m.date=m.date||new Date().toISOString().slice(0,10);m.scorers=Array.isArray(m.scorers)?m.scorers:[];m.assists=Array.isArray(m.assists)?m.assists:[];m.cleanSheetPlayerId=m.cleanSheetPlayerId||null;m.mvpPlayerId=m.mvpPlayerId||null;m.cards=Array.isArray(m.cards)?m.cards:[];d.matches.unshift(m);write(d);res.json(m)});
-app.delete("/api/matches/:id",(req,res)=>{const d=read();d.matches=d.matches.filter(m=>m.id!==req.params.id);write(d);res.json({ok:true})});
-app.post("/api/teams",(req,res)=>{const d=read(),name=String(req.body.name||"").trim();if(!name)return res.status(400).json({error:"Team name required."});const t={id:"t"+Date.now(),name,short:(name.replace(/[^A-Za-z]/g,"").slice(0,3)||"TM").toUpperCase()};d.teams.push(t);write(d);res.json(t)});
-app.post("/api/players",(req,res)=>{const d=read(),name=String(req.body.name||"").trim(),teamId=req.body.teamId;if(!name||!d.teams.some(t=>t.id===teamId))return res.status(400).json({error:"Name and valid team required."});const p={id:"p"+Date.now(),name,teamId,position:req.body.position||"FW"};d.players.push(p);write(d);res.json(p)});
-app.get("*splat",(req,res)=>res.sendFile(path.join(__dirname,"public","index.html")));
-app.listen(PORT,()=>console.log(`MARBALL 7v7 running on http://localhost:${PORT}`));
-app.post("/api/login", (req, res) => {
+    : null;
 
-    const { username, password } = req.body;
 
-    const adminUser = process.env.ADMIN_USER;
-    const adminPassword = process.env.ADMIN_PASSWORD;
+// ======================================================
+// FALLBACK DATA
+// ======================================================
 
-    if (
-        username === adminUser &&
-        password === adminPassword
-    ) {
-        req.session.isAdmin = true;
+const fallbackData = {
+    league: {
+        name: "ABATERA LEAGUE",
+        season: "Season 2026",
+        pointsWin: 3,
+        pointsDraw: 1
+    },
 
-        return res.json({
-            ok: true
-        });
+    teams: [],
+
+    players: [],
+
+    matches: []
+};
+
+
+// ======================================================
+// LOAD ORIGINAL DATA.JSON
+// ======================================================
+
+function loadLocalData() {
+
+    if (!fs.existsSync(DATA)) {
+
+        fs.writeFileSync(
+            DATA,
+            JSON.stringify(
+                fallbackData,
+                null,
+                2
+            )
+        );
+
     }
 
-    res.status(401).json({
-        error: "Wrong username or password."
-    });
-});
+    return JSON.parse(
+        fs.readFileSync(
+            DATA,
+            "utf8"
+        )
+    );
+
+}
 
 
-app.post("/api/logout", (req, res) => {
+// ======================================================
+// INITIALIZE DATABASE
+// ======================================================
 
-    req.session.destroy(() => {
+async function initDatabase() {
+
+    if (!pool) {
+
+        console.log(
+            "DATABASE_URL not found. Using data.json locally."
+        );
+
+        return;
+
+    }
+
+
+    await pool.query(`
+        CREATE TABLE IF NOT EXISTS app_state (
+            id INTEGER PRIMARY KEY,
+            data JSONB NOT NULL
+        )
+    `);
+
+
+    const result =
+        await pool.query(
+            "SELECT id FROM app_state WHERE id = 1"
+        );
+
+
+    // First time only:
+    // import your current data.json into PostgreSQL
+
+    if (result.rowCount === 0) {
+
+        const currentData =
+            loadLocalData();
+
+
+        await pool.query(
+            `
+            INSERT INTO app_state (id, data)
+            VALUES (1, $1::jsonb)
+            `,
+            [
+                JSON.stringify(
+                    currentData
+                )
+            ]
+        );
+
+
+        console.log(
+            "ABATERA data imported into PostgreSQL."
+        );
+
+    }
+
+
+    console.log(
+        "PostgreSQL connected successfully."
+    );
+
+}
+
+
+// ======================================================
+// READ DATA
+// ======================================================
+
+async function readData() {
+
+    // Online / Railway
+
+    if (pool) {
+
+        const result =
+            await pool.query(
+                "SELECT data FROM app_state WHERE id = 1"
+            );
+
+
+        if (
+            result.rows.length > 0
+        ) {
+
+            return result.rows[0].data;
+
+        }
+
+    }
+
+
+    // Local fallback
+
+    return loadLocalData();
+
+}
+
+
+// ======================================================
+// WRITE DATA
+// ======================================================
+
+async function writeData(data) {
+
+    // PostgreSQL
+
+    if (pool) {
+
+        await pool.query(
+            `
+            INSERT INTO app_state (id, data)
+            VALUES (1, $1::jsonb)
+
+            ON CONFLICT (id)
+            DO UPDATE SET data = EXCLUDED.data
+            `,
+            [
+                JSON.stringify(
+                    data
+                )
+            ]
+        );
+
+
+        return;
+
+    }
+
+
+    // Local fallback
+
+    fs.writeFileSync(
+        DATA,
+        JSON.stringify(
+            data,
+            null,
+            2
+        )
+    );
+
+}
+
+
+// ======================================================
+// EXPRESS
+// ======================================================
+
+app.use(
+    express.json()
+);
+
+
+app.use(
+    session({
+
+        secret:
+            process.env.SESSION_SECRET
+            || "change-this-secret",
+
+        resave: false,
+
+        saveUninitialized: false,
+
+        cookie: {
+
+            httpOnly: true,
+
+            sameSite: "lax",
+
+            secure:
+                process.env.NODE_ENV
+                === "production",
+
+            maxAge:
+                1000
+                * 60
+                * 60
+                * 12
+
+        }
+
+    })
+);
+
+
+app.use(
+    express.static(
+        path.join(
+            __dirname,
+            "public"
+        )
+    )
+);
+
+
+// ======================================================
+// ADMIN LOGIN
+// ======================================================
+
+app.post(
+    "/api/login",
+
+    (req, res) => {
+
+        const {
+            username,
+            password
+        } = req.body;
+
+
+        const adminUser =
+            process.env.ADMIN_USER;
+
+
+        const adminPassword =
+            process.env.ADMIN_PASSWORD;
+
+
+        if (
+            username === adminUser
+            &&
+            password === adminPassword
+        ) {
+
+            req.session.isAdmin = true;
+
+
+            return res.json({
+                ok: true
+            });
+
+        }
+
+
+        return res
+            .status(401)
+            .json({
+
+                error:
+                    "Wrong username or password."
+
+            });
+
+    }
+);
+
+
+// ======================================================
+// LOGOUT
+// ======================================================
+
+app.post(
+    "/api/logout",
+
+    (req, res) => {
+
+        req.session.destroy(() => {
+
+            res.json({
+                ok: true
+            });
+
+        });
+
+    }
+);
+
+
+// ======================================================
+// ADMIN STATUS
+// ======================================================
+
+app.get(
+    "/api/admin-status",
+
+    (req, res) => {
 
         res.json({
-            ok: true
+
+            loggedIn:
+                req.session.isAdmin
+                === true
+
         });
 
-    });
+    }
+);
 
-});
 
+// ======================================================
+// ADMIN SECURITY
+// ======================================================
 
-app.get("/api/admin-status", (req, res) => {
+function requireAdmin(
+    req,
+    res,
+    next
+) {
 
-    res.json({
-        loggedIn: req.session.isAdmin === true
-    });
+    if (
+        req.session.isAdmin
+    ) {
 
-});
-function requireAdmin(req, res, next) {
-
-    if (req.session.isAdmin) {
         return next();
+
     }
 
-    return res.status(401).json({
-        error: "Admin login required."
-    });
+
+    return res
+        .status(401)
+        .json({
+
+            error:
+                "Admin login required."
+
+        });
+
 }
+
+
+// ======================================================
+// GET LEAGUE DATA
+// ======================================================
+
+app.get(
+    "/api/data",
+
+    async (req, res) => {
+
+        try {
+
+            const data =
+                await readData();
+
+
+            res.json(
+                data
+            );
+
+        }
+
+        catch (error) {
+
+            console.error(
+                error
+            );
+
+
+            res
+                .status(500)
+                .json({
+
+                    error:
+                        "Could not load league data."
+
+                });
+
+        }
+
+    }
+);
+
+
+// ======================================================
+// ADD MATCH
+// ======================================================
+
+app.post(
+    "/api/matches",
+
+    requireAdmin,
+
+    async (req, res) => {
+
+        try {
+
+            const data =
+                await readData();
+
+
+            const match = {
+                ...req.body
+            };
+
+
+            if (
+                !match.homeTeamId
+                ||
+                !match.awayTeamId
+                ||
+                match.homeTeamId
+                === match.awayTeamId
+            ) {
+
+                return res
+                    .status(400)
+                    .json({
+
+                        error:
+                            "Choose two different teams."
+
+                    });
+
+            }
+
+
+            match.homeGoals =
+                Number(
+                    match.homeGoals
+                );
+
+
+            match.awayGoals =
+                Number(
+                    match.awayGoals
+                );
+
+
+            if (
+                !Number.isInteger(
+                    match.homeGoals
+                )
+                ||
+                !Number.isInteger(
+                    match.awayGoals
+                )
+                ||
+                match.homeGoals < 0
+                ||
+                match.awayGoals < 0
+            ) {
+
+                return res
+                    .status(400)
+                    .json({
+
+                        error:
+                            "Invalid score."
+
+                    });
+
+            }
+
+
+            match.id =
+                "m" + Date.now();
+
+
+            match.date =
+                match.date
+                ||
+                new Date()
+                    .toISOString()
+                    .slice(
+                        0,
+                        10
+                    );
+
+
+            match.scorers =
+                Array.isArray(
+                    match.scorers
+                )
+                    ? match.scorers
+                    : [];
+
+
+            match.assists =
+                Array.isArray(
+                    match.assists
+                )
+                    ? match.assists
+                    : [];
+
+
+            match.cleanSheetPlayerId =
+                match.cleanSheetPlayerId
+                || null;
+
+
+            match.mvpPlayerId =
+                match.mvpPlayerId
+                || null;
+
+
+            match.cards =
+                Array.isArray(
+                    match.cards
+                )
+                    ? match.cards
+                    : [];
+
+
+            data.matches =
+                Array.isArray(
+                    data.matches
+                )
+                    ? data.matches
+                    : [];
+
+
+            data.matches.unshift(
+                match
+            );
+
+
+            await writeData(
+                data
+            );
+
+
+            res.json(
+                match
+            );
+
+        }
+
+        catch (error) {
+
+            console.error(
+                error
+            );
+
+
+            res
+                .status(500)
+                .json({
+
+                    error:
+                        "Could not save match."
+
+                });
+
+        }
+
+    }
+);
+
+
+// ======================================================
+// DELETE MATCH
+// ======================================================
+
+app.delete(
+    "/api/matches/:id",
+
+    requireAdmin,
+
+    async (req, res) => {
+
+        try {
+
+            const data =
+                await readData();
+
+
+            data.matches =
+                data.matches.filter(
+
+                    (match) =>
+                        match.id
+                        !== req.params.id
+
+                );
+
+
+            await writeData(
+                data
+            );
+
+
+            res.json({
+                ok: true
+            });
+
+        }
+
+        catch (error) {
+
+            console.error(
+                error
+            );
+
+
+            res
+                .status(500)
+                .json({
+
+                    error:
+                        "Could not delete match."
+
+                });
+
+        }
+
+    }
+);
+
+
+// ======================================================
+// ADD TEAM
+// ======================================================
+
+app.post(
+    "/api/teams",
+
+    requireAdmin,
+
+    async (req, res) => {
+
+        try {
+
+            const data =
+                await readData();
+
+
+            const name =
+                String(
+                    req.body.name
+                    || ""
+                ).trim();
+
+
+            if (!name) {
+
+                return res
+                    .status(400)
+                    .json({
+
+                        error:
+                            "Team name required."
+
+                    });
+
+            }
+
+
+            const newTeam = {
+
+                id:
+                    "t"
+                    + Date.now(),
+
+                name,
+
+                short:
+                    (
+                        name
+                            .replace(
+                                /[^A-Za-z]/g,
+                                ""
+                            )
+                            .slice(
+                                0,
+                                3
+                            )
+                        || "TM"
+                    )
+                    .toUpperCase()
+
+            };
+
+
+            data.teams.push(
+                newTeam
+            );
+
+
+            await writeData(
+                data
+            );
+
+
+            res.json(
+                newTeam
+            );
+
+        }
+
+        catch (error) {
+
+            console.error(
+                error
+            );
+
+
+            res
+                .status(500)
+                .json({
+
+                    error:
+                        "Could not add team."
+
+                });
+
+        }
+
+    }
+);
+
+
+// ======================================================
+// ADD PLAYER
+// ======================================================
+
+app.post(
+    "/api/players",
+
+    requireAdmin,
+
+    async (req, res) => {
+
+        try {
+
+            const data =
+                await readData();
+
+
+            const name =
+                String(
+                    req.body.name
+                    || ""
+                ).trim();
+
+
+            const teamId =
+                req.body.teamId;
+
+
+            if (
+                !name
+                ||
+                !data.teams.some(
+
+                    (team) =>
+                        team.id
+                        === teamId
+
+                )
+            ) {
+
+                return res
+                    .status(400)
+                    .json({
+
+                        error:
+                            "Name and valid team required."
+
+                    });
+
+            }
+
+
+            const newPlayer = {
+
+                id:
+                    "p"
+                    + Date.now(),
+
+                name,
+
+                teamId,
+
+                position:
+                    req.body.position
+                    || ""
+
+            };
+
+
+            data.players.push(
+                newPlayer
+            );
+
+
+            await writeData(
+                data
+            );
+
+
+            res.json(
+                newPlayer
+            );
+
+        }
+
+        catch (error) {
+
+            console.error(
+                error
+            );
+
+
+            res
+                .status(500)
+                .json({
+
+                    error:
+                        "Could not add player."
+
+                });
+
+        }
+
+    }
+);
+
+
+// ======================================================
+// WEBSITE
+// ======================================================
+
+app.get(
+    "*splat",
+
+    (req, res) => {
+
+        res.sendFile(
+            path.join(
+                __dirname,
+                "public",
+                "index.html"
+            )
+        );
+
+    }
+);
+
+
+// ======================================================
+// START
+// ======================================================
+
+async function startServer() {
+
+    try {
+
+        await initDatabase();
+
+
+        app.listen(
+            PORT,
+
+            () => {
+
+                console.log(
+                    `ABATERA LEAGUE running on port ${PORT}`
+                );
+
+            }
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Server startup failed:",
+            error
+        );
+
+
+        process.exit(1);
+
+    }
+
+}
+
+
+startServer();
