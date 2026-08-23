@@ -395,7 +395,10 @@ main {
 
     z-index: 2;
 
-    font-size: 180px;
+    width: 180px;
+    height: 180px;
+
+    flex-shrink: 0;
 
     filter:
         drop-shadow(
@@ -407,6 +410,15 @@ main {
         ballFloat
         5s ease-in-out
         infinite;
+}
+
+.ball img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: contain;
+
+    display: block;
 }
 
 @keyframes ballFloat {
