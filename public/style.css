@@ -1935,3 +1935,38 @@ body[class*="theme-"]
         drop-shadow(0 0 10px var(--green))
         drop-shadow(0 0 20px var(--green));
 }
+
+/* ========================================
+   HERO ABATERA LOGO
+======================================== */
+
+.heroLeagueLogo {
+    width: 260px;
+    height: 260px;
+
+    object-fit: contain;
+
+    display: block;
+
+    filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 0.6));
+
+    transition: transform 0.4s ease,
+                filter 0.4s ease;
+}
+
+.heroLeagueLogo:hover {
+    transform: scale(1.08) rotate(2deg);
+
+    filter:
+        drop-shadow(0 15px 30px rgba(0, 0, 0, 0.6))
+        drop-shadow(0 0 25px var(--green));
+}
+
+
+/* Mobile */
+@media (max-width: 800px) {
+    .heroLeagueLogo {
+        width: 180px;
+        height: 180px;
+    }
+}
